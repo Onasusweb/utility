@@ -117,6 +117,21 @@ class SluggableBehavior extends ModelBehavior {
     }
 
     /**
+     * Helper function to check if a slug exists.
+     *
+     * @param Model $model
+     * @param string $slug
+     * @return bool
+     */
+    public function slugExists(Model $model, $slug) {
+        return (bool) $model->find('count', array(
+            'conditions' => array($this->settings[$model->alias]['slug'] => $slug),
+            'recursive' => -1,
+            'contain' => false
+        ));
+    }
+
+    /**
      * Validate the slug is unique by querying for other slugs.
      *
      * @param Model $model
@@ -125,19 +140,32 @@ class SluggableBehavior extends ModelBehavior {
      */
     protected function _makeUnique(Model $model, $string) {
         $settings = $this->settings[$model->alias];
-        $conditions = array($settings['slug'] . ' LIKE' => $string . '%') + $settings['scope'];
+        $conditions = array(
+            array($settings['slug'] => $string),
+            array($settings['slug'] . ' LIKE' => $string . $settings['separator'] . '%')
+        );
 
-        if ($model->id) {
-            $conditions[$model->primaryKey . ' !='] = $model->id;
-        }
+        foreach ($conditions as $i => $where) {
+            $where = $where + $settings['scope'];
 
-        $count = $model->find('count', array(
-            'conditions' => $conditions,
-            'recursive' => -1,
-            'contain' => false
-        ));
+            if ($model->id) {
+                $where[$model->primaryKey . ' !='] = $model->id;
+            }
 
-        if ($count) {
+            $count = $model->find('count', array(
+                'conditions' => $where,
+                'recursive' => -1,
+                'contain' => false
+            ));
+
+            if ($i == 0) {
+                if ($count == 0) {
+                    return $string;
+                } else {
+                    continue;
+                }
+            }
+
             $string .= $settings['separator'] . $count;
         }
 

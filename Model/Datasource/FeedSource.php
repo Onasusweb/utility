@@ -9,7 +9,7 @@ App::uses('Folder', 'Utility');
 App::uses('DataSource', 'Model/Datasource');
 App::uses('HttpSocket', 'Network/Http');
 
-use Titon\Utility\Converter;
+use mjohnson\utility\TypeConverter;
 
 /**
  * A DataSource that can read and parse web feeds and aggregate them into a single result.
@@ -228,7 +228,7 @@ class FeedSource extends DataSource {
             return array();
         }
 
-        $feed = Converter::toArray($response->body());
+        $feed = TypeConverter::toArray($response->body());
         $clean = array();
 
         if (!empty($query['root']) && !empty($feed[$query['feed']['root']])) {
@@ -259,7 +259,7 @@ class FeedSource extends DataSource {
             'guid' => array('guid', 'id'),
             'date' => array('date', 'pubDate', 'published', 'updated'),
             'link' => array('link', 'origLink'),
-            'image' => array('image', 'thumbnail'),
+            'image' => array('image', 'thumbnail', 'enclosure'),
             'author' => array('author', 'writer', 'editor', 'user'),
             'source' => array('source'),
             'description' => array('description', 'desc', 'summary', 'content', 'text')
@@ -278,7 +278,7 @@ class FeedSource extends DataSource {
                     $attributes = $keys['attributes'];
                     unset($keys['attributes']);
                 } else {
-                    $attributes = array('value', 'href', 'src', 'name', 'label');
+                    $attributes = array('value', 'href', 'src', 'name', 'label', 'url');
                 }
 
                 if (isset($keys['keys'])) {

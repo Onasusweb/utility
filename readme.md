@@ -1,4 +1,4 @@
-# Utility v1.6.2 #
+# Utility v1.7.1 #
 
 A collection of CakePHP utility components, behaviors, datasources, models, helpers and more all packaged into a single plugin.
 
@@ -12,7 +12,7 @@ A collection of CakePHP utility components, behaviors, datasources, models, help
 ## Dependencies ##
 
 * `Decoda` - https://github.com/milesj/decoda (DecodaHelper)
-* `Titon\Utility` - https://github.com/titon/utility (AjaxHandlerComponent, FeedSource)
+* `TypeConverter` - https://github.com/milesj/type-converter (AjaxHandlerComponent, FeedSource)
 
 ## Libraries ##
 
